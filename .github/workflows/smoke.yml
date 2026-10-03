@@ -1,0 +1,22 @@
+name: Smoke check
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Exercise the plugin in mpv
+        run: |
+          docker run --rm \
+            --volume "$PWD:/work:ro" --workdir /work \
+            archlinux:base bash -c \
+            'pacman -Syu --noconfirm mpv ffmpeg python && python tests/smoke.py'
